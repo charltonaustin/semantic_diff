@@ -3,41 +3,39 @@ package com.charltonaustin;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
 
 public class SemanticDiff {
 
 
     public boolean itIsTheSame(String from, String to) {
-        HashSet<String> myMethods = new HashSet<String>();
+        HashMap<Integer, Node> myMethods = new HashMap<Integer, Node>();
 
         giveMeMethods(from, myMethods);
 
-        HashSet<String> myOtherMethods = new HashSet<String>();
+        HashMap<Integer, Node> myOtherMethods = new HashMap<Integer, Node>();
 
         giveMeMethods(to, myOtherMethods);
-        for (String method : myMethods) {
-            if(!myOtherMethods.contains(method)){
+        for (int method : myMethods.keySet()) {
+            if(!myOtherMethods.containsKey(method)){
                 return false;
             }
         }
-        for (String method : myOtherMethods) {
-            if(!myMethods.contains(method)){
+        for (int method : myOtherMethods.keySet()) {
+            if(!myMethods.containsKey(method)){
                 return false;
             }
         }
         return true;
     }
 
-    private void giveMeMethods(String src, HashSet<String> myMethods) {
+    private void giveMeMethods(String src, HashMap<Integer, Node> myMethods) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(src.getBytes());
 
         CompilationUnit cu;
@@ -62,18 +60,16 @@ public class SemanticDiff {
      */
     private static class MethodVisitor extends VoidVisitorAdapter {
 
-        Set<String> myMethods;
+        HashMap<Integer, Node> myMethods;
 
-        public MethodVisitor(Set<String> myMethods) {
+        public MethodVisitor(HashMap<Integer, Node> myMethods) {
             this.myMethods = myMethods;
         }
 
         @Override
         public void visit(MethodDeclaration n, Object arg) {
 
-            String signature = n.getName();
-            signature = signature + " " + n.getParameters();
-            myMethods.add(signature );
+            myMethods.put(n.hashCode(), n );
             super.visit(n, arg);
         }
     }
