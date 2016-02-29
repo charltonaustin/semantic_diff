@@ -24,7 +24,17 @@ public class SemanticDiff {
         HashSet<String> myOtherMethods = new HashSet<String>();
 
         giveMeMethods(to, myOtherMethods);
-        return Sets.symmetricDifference(myMethods, myOtherMethods).isEmpty();
+        for (String method : myMethods) {
+            if(!myOtherMethods.contains(method)){
+                return false;
+            }
+        }
+        for (String method : myOtherMethods) {
+            if(!myMethods.contains(method)){
+                return false;
+            }
+        }
+        return true;
     }
 
     private void giveMeMethods(String src, HashSet<String> myMethods) {
