@@ -24,12 +24,12 @@ public class SemanticDiff {
         giveMeMethods(to, myOtherMethods);
         for (int method : myMethods.keySet()) {
             if(!myOtherMethods.containsKey(method)){
-                return HowDifferent.METHOD_REORDERING;
+                return HowDifferent.NOT_IDENTICAL;
             }
         }
         for (int method : myOtherMethods.keySet()) {
             if(!myMethods.containsKey(method)){
-                return HowDifferent.METHOD_REORDERING;
+                return HowDifferent.NOT_IDENTICAL;
             }
         }
         return HowDifferent.IDENTICAL;

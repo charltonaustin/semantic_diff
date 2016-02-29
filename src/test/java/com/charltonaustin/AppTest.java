@@ -41,7 +41,7 @@ public class AppTest {
         String to = "public class Something {public void goodbye(){}\n" +
                 "public void hello(){int b = 1;}}\n";
 
-        assertEquals(HowDifferent.METHOD_REORDERING, semanticDiff.itIsTheSame(from, to));
+        assertEquals(HowDifferent.NOT_IDENTICAL, semanticDiff.itIsTheSame(from, to));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class AppTest {
                 "public void hello(){}" +
                 "public void different(){}}\n";
 
-        assertEquals(HowDifferent.METHOD_REORDERING, semanticDiff.itIsTheSame(from, to));
+        assertEquals(HowDifferent.NOT_IDENTICAL, semanticDiff.itIsTheSame(from, to));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AppTest {
         String from = "public class Something {public void hello(int a){}}\n";
         String to = "public class Something {public void hello(){}}\n";
 
-        assertEquals(HowDifferent.METHOD_REORDERING, semanticDiff.itIsTheSame(from, to));
+        assertEquals(HowDifferent.NOT_IDENTICAL, semanticDiff.itIsTheSame(from, to));
     }
 
 }
