@@ -14,7 +14,7 @@ import java.util.HashMap;
 public class SemanticDiff {
 
 
-    public boolean itIsTheSame(String from, String to) {
+    public HowDifferent itIsTheSame(String from, String to) {
         HashMap<Integer, Node> myMethods = new HashMap<Integer, Node>();
 
         giveMeMethods(from, myMethods);
@@ -24,15 +24,15 @@ public class SemanticDiff {
         giveMeMethods(to, myOtherMethods);
         for (int method : myMethods.keySet()) {
             if(!myOtherMethods.containsKey(method)){
-                return false;
+                return HowDifferent.METHOD_REORDERING;
             }
         }
         for (int method : myOtherMethods.keySet()) {
             if(!myMethods.containsKey(method)){
-                return false;
+                return HowDifferent.METHOD_REORDERING;
             }
         }
-        return true;
+        return HowDifferent.IDENTICAL;
     }
 
     private void giveMeMethods(String src, HashMap<Integer, Node> myMethods) {
