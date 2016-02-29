@@ -34,6 +34,26 @@ public class AppTest {
     }
 
     @Test
+    public void testSameIsTheSame() {
+        String from = "public class Something {public void hello(){}\n" +
+                "public void goodbye(){}}\n";
+        String to = "public class Something {public void hello(){}\n" +
+                "public void goodbye(){}}\n";
+        
+        assertTrue(semanticDiff.itIsTheSame(from, to));
+    }
+
+    @Test
+    public void testMoveAndAddToBodyShouldBeDifferent() {
+        String from = "public class Something {public void hello(){}\n" +
+                "public void goodbye(){}}\n";
+        String to = "public class Something {public void goodbye(){}\n" +
+                "public void hello(){int b = 1;}}\n";
+
+        assertFalse(semanticDiff.itIsTheSame(from, to));
+    }
+
+    @Test
     public void testAddingMethodIsDifferent() {
         String from = "public class Something {public void hello(){}\n" +
                 "public void goodbye(){}}\n";
@@ -51,6 +71,5 @@ public class AppTest {
 
         assertFalse(semanticDiff.itIsTheSame(from, to));
     }
-
 
 }
