@@ -3,45 +3,55 @@ package com.charltonaustin;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 public class SemanticDiff {
 
 
     public HowDifferent itIsTheSame(String from, String to) {
-        HashMap<Integer, Node> myMethods = new HashMap<Integer, Node>();
+        HashMap<MethodDeclaration, BlockStmt> fromMethods = new HashMap<MethodDeclaration, BlockStmt>();
 
-        giveMeMethods(from, myMethods);
+        giveMeMethods(from, fromMethods);
 
-        HashMap<Integer, Node> myOtherMethods = new HashMap<Integer, Node>();
+        HashMap<MethodDeclaration, BlockStmt> toMethods = new HashMap<MethodDeclaration, BlockStmt>();
 
-        giveMeMethods(to, myOtherMethods);
-        for (int method : myMethods.keySet()) {
-            if(!myOtherMethods.containsKey(method)){
-                return HowDifferent.NOT_IDENTICAL;
+        giveMeMethods(to, toMethods);
+        for (MethodDeclaration fromMethod : fromMethods.keySet()) {
+            if (!toMethods.containsKey(fromMethod)) {
+                return HowDifferent.DELETION;
             }
         }
-        for (int method : myOtherMethods.keySet()) {
-            if(!myMethods.containsKey(method)){
-                return HowDifferent.NOT_IDENTICAL;
+        for (MethodDeclaration toMethod : toMethods.keySet()) {
+            if (!fromMethods.containsKey(toMethod)) {
+                return HowDifferent.ADDITION;
             }
+            BlockStmt fromBody = fromMethods.get(toMethod);
+            BlockStmt toBody = toMethods.get(toMethod);
+            List<Statement> fromBodyStmts = fromBody.getStmts();
+            List<Statement> toBodyStmts = toBody.getStmts();
+            for (Statement toBodyStmt : toBodyStmts) {
+                if (!(fromBodyStmts.contains(toBodyStmt))) {
+                    return HowDifferent.ADDITION;
+                }
+            }
+
         }
         return HowDifferent.IDENTICAL;
     }
 
-    private void giveMeMethods(String src, HashMap<Integer, Node> myMethods) {
+    private void giveMeMethods(String src, HashMap<MethodDeclaration, BlockStmt> myMethods) {
         ByteArrayInputStream inputStream = new ByteArrayInputStream(src.getBytes());
 
-        CompilationUnit cu;
         try {
-            // parse the file
-            cu = JavaParser.parse(inputStream);
+            CompilationUnit cu = JavaParser.parse(inputStream);
             MethodVisitor methodVisitor = new MethodVisitor(myMethods);
             methodVisitor.visit(cu, null);
         } catch (ParseException e) {
@@ -60,16 +70,17 @@ public class SemanticDiff {
      */
     private static class MethodVisitor extends VoidVisitorAdapter {
 
-        HashMap<Integer, Node> myMethods;
+        HashMap<MethodDeclaration, BlockStmt> myMethods;
 
-        public MethodVisitor(HashMap<Integer, Node> myMethods) {
+        public MethodVisitor(HashMap<MethodDeclaration, BlockStmt> myMethods) {
             this.myMethods = myMethods;
         }
 
         @Override
         public void visit(MethodDeclaration n, Object arg) {
-
-            myMethods.put(n.hashCode(), n );
+            BlockStmt body = n.getBody();
+            n.setBody(new BlockStmt());
+            myMethods.put(n, body);
             super.visit(n, arg);
         }
     }
