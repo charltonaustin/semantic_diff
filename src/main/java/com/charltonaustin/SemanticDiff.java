@@ -43,6 +43,12 @@ public class SemanticDiff {
                 }
             }
 
+            for (Statement fromBodyStmt : fromBodyStmts) {
+                if (!(toBodyStmts.contains(fromBodyStmt))) {
+                    return HowDifferent.DELETION;
+                }
+            }
+
         }
         return HowDifferent.IDENTICAL;
     }

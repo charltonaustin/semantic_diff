@@ -35,17 +35,23 @@ public class SemanticDiffTest {
     }
 
     @Test
-    public void testMoveAndAddToBodyShouldBeDifferent() {
-        String from = "public class Something {public void hello(){}\n" +
-                "public void goodbye(){}}\n";
-        String to = "public class Something {public void goodbye(){}\n" +
-                "public void hello(){int b = 1;}}\n";
+    public void testAddingStatementIsAddition() {
+        String from = "public class Something {public void hello(){}}\n";
+        String to = "public class Something {public void hello(){int b = 1;}}\n";
 
         assertEquals(HowDifferent.ADDITION, semanticDiff.itIsTheSame(from, to));
     }
 
     @Test
-    public void testAddingMethodIsDifferent() {
+    public void testRemovingStatementIsDeletion() {
+        String from = "public class Something {public void hello(){int b = 1;}}\n";
+        String to = "public class Something {public void hello(){}}\n";
+
+        assertEquals(HowDifferent.DELETION, semanticDiff.itIsTheSame(from, to));
+    }
+
+    @Test
+    public void testAddingMethodIsAddition() {
         String from = "public class Something {public void hello(){}\n" +
                 "public void goodbye(){}}\n";
         String to = "public class Something {public void goodbye(){}\n" +
@@ -56,7 +62,16 @@ public class SemanticDiffTest {
     }
 
     @Test
-    public void testAddingMethodParameterIsDifferent() {
+    public void testRemovingMethodIsDeletion() {
+        String from = "public class Something {public void hello(){}\n" +
+                "public void goodbye(){}}\n";
+        String to = "public class Something {public void hello(){}}\n";
+
+        assertEquals(HowDifferent.DELETION, semanticDiff.itIsTheSame(from, to));
+    }
+
+    @Test
+    public void testRemovingParameterIsDeletion() {
         String from = "public class Something {public void hello(int a){}}\n";
         String to = "public class Something {public void hello(){}}\n";
 
