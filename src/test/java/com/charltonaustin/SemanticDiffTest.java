@@ -78,4 +78,12 @@ public class SemanticDiffTest {
         assertEquals(HowDifferent.DELETION, semanticDiff.itIsTheSame(from, to));
     }
 
+    @Test
+    public void testAddingParameterIsAddition() {
+        String from = "public class Something {public void hello(){}}\n";
+        String to = "public class Something {public void hello(int a){}}\n";
+
+        assertEquals(HowDifferent.ADDITION, semanticDiff.itIsTheSame(from, to));
+    }
+
 }

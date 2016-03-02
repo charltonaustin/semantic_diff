@@ -18,12 +18,12 @@ public class SemanticDiff {
 
     public HowDifferent itIsTheSame(String from, String to) {
         HashMap<MethodDeclaration, BlockStmt> fromMethods = new HashMap<MethodDeclaration, BlockStmt>();
-
         giveMeMethods(from, fromMethods);
 
-        HashMap<MethodDeclaration, BlockStmt> toMethods = new HashMap<MethodDeclaration, BlockStmt>();
 
+        HashMap<MethodDeclaration, BlockStmt> toMethods = new HashMap<MethodDeclaration, BlockStmt>();
         giveMeMethods(to, toMethods);
+
         for (MethodDeclaration fromMethod : fromMethods.keySet()) {
             if (!toMethods.containsKey(fromMethod)) {
                 return HowDifferent.DELETION;
@@ -42,7 +42,6 @@ public class SemanticDiff {
                     return HowDifferent.ADDITION;
                 }
             }
-
             for (Statement fromBodyStmt : fromBodyStmts) {
                 if (!(toBodyStmts.contains(fromBodyStmt))) {
                     return HowDifferent.DELETION;
@@ -58,6 +57,7 @@ public class SemanticDiff {
 
         try {
             CompilationUnit cu = JavaParser.parse(inputStream);
+
             MethodVisitor methodVisitor = new MethodVisitor(myMethods);
             methodVisitor.visit(cu, null);
         } catch (ParseException e) {
